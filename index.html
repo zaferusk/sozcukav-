@@ -82,13 +82,15 @@
     let kelimeler = ["elma", "armut", "masa", "kedi", "köpek"];
 
     function ara() {
-      const harf = document.getElementById("harf").value.toLowerCase();
+      const harf = document.getElementById("harf").value.toLowerCase().trim();
+
       const liste = document.getElementById("sonuc");
       liste.innerHTML = "";
 
       if (!harf) return;
 
       const sonuc = kelimeler.filter(k => k.includes(harf));
+
       sonuc.forEach(k => {
         const li = document.createElement("li");
         li.textContent = k;
