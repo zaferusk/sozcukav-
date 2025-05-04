@@ -2,108 +2,68 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Sözcük Avı</title>
+  <title>Kelime Makinesi</title>
   <style>
-    body {
-      background-color: #fff;
-      color: #b30000;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
-    }
-
-    h1, h2, h3 {
-      text-align: center;
-    }
-
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      border: 2px solid #b30000;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-
-    button {
-      background-color: #b30000;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #990000;
-    }
-
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    li {
-      background-color: #f2f2f2;
-      margin: 5px;
-      padding: 8px 12px;
-      border-radius: 5px;
-    }
-
-    .box {
-      background-color: #fffafa;
-      border: 1px solid #b30000;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-    }
+    body { font-family: Arial; background: #e0f7fa; padding: 20px; }
+    input, button { padding: 10px; margin: 5px; font-size: 16px; }
+    ul { list-style: none; padding: 0; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>🧠 Sözcük Avı</h1>
+  <h2>Harf Gir, Kelimeyi Bul!</h2>
+  <input type="text" id="harfInput" placeholder="örnek: b, l">
+  <button onclick="kelimeAra()">Bul</button>
 
-    <div>
-      <input type="text" id="harf" maxlength="1" placeholder="Bir harf girin">
-      <button onclick="ara()">Ara</button>
-    </div>
+  <h3>Yeni Kelime Ekle</h3>
+  <input type="text" id="yeniKelimeInput" placeholder="Kelime ekle">
+  <button onclick="kelimeEkle()">Ekle</button>
 
-    <h2>Sonuçlar</h2>
-    <ul id="sonuc"></ul>
-
-    <hr>
-
-    <h3>Yeni Kelime Ekle</h3>
-    <input type="text" id="yeniKelime" placeholder="Kelime yazın">
-    <button onclick="ekle()">Ekle</button>
-  </div>
+  <ul id="sonuclar"></ul>
 
   <script>
-    let kelimeler = ["elma", "armut", "masa", "kedi", "köpek"];
+    // Başlangıç kelimeleri
+    const varsayilanKelimeler = [
+      "abajur", "telve", "balık", "kalem", "battaniye", "telefon",
+      "elbise", "masa", "sandalye", "tabak", "kabak", "bulut", "balon"
+    ];
 
-    function ara() {
-      const harf = document.getElementById("harf").value.toLowerCase().trim();
+    // localStorage'tan kelimeleri al, yoksa varsayılanları kullan
+    let kelimeler = JSON.parse(localStorage.getItem("kelimeListesi")) || varsayilanKelimeler;
 
-      const liste = document.getElementById("sonuc");
-      liste.innerHTML = "";
-
-      if (!harf) return;
-
-      const sonuc = kelimeler.filter(k => k.includes(harf));
-
-      sonuc.forEach(k => {
-        const li = document.createElement("li");
-        li.textContent = k;
-        liste.appendChild(li);
-      });
+    function guncelleLocalStorage() {
+      localStorage.setItem("kelimeListesi", JSON.stringify(kelimeler));
     }
 
-    function ekle() {
-      const yeni = document.getElementById("yeniKelime").value.toLowerCase().trim();
-      if (yeni && !kelimeler.includes(yeni)) {
-        kelimeler.push(yeni);
-        alert(`"${yeni}" kelimesi eklendi!`);
-        document.getElementById("yeniKelime").value = "";
+    function kelimeAra() {
+      const input = document.getElementById("harfInput").value.toLowerCase().replace(/\s+/g, '');
+      const harfler = input.split('');
+      const sonuclar = document.getElementById("sonuclar");
+      sonuclar.innerHTML = '';
+
+      const eslesenler = kelimeler.filter(kelime =>
+        harfler.every(harf => kelime.includes(harf))
+      );
+
+      if (eslesenler.length === 0) {
+        sonuclar.innerHTML = '<li>Uygun kelime bulunamadı.</li>';
+      } else {
+        eslesenler.forEach(kelime => {
+          const li = document.createElement("li");
+          li.textContent = kelime;
+          sonuclar.appendChild(li);
+        });
+      }
+    }
+
+    function kelimeEkle() {
+      const yeniKelime = document.getElementById("yeniKelimeInput").value.toLowerCase().trim();
+      if (yeniKelime && !kelimeler.includes(yeniKelime)) {
+        kelimeler.push(yeniKelime);
+        guncelleLocalStorage();
+        alert(`"${yeniKelime}" eklendi!`);
+        document.getElementById("yeniKelimeInput").value = '';
+      } else {
+        alert("Kelime boş veya zaten eklenmiş.");
       }
     }
   </script>
