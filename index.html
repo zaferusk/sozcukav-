@@ -59,12 +59,12 @@
 
   <ul id="sonuclar"></ul>
 
-  <!-- Firebase Kitaplıkları -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // Firebase yapılandırman
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCz9FOs-rnih7ZLZPva0xpKldmbaKpwrQA",
       authDomain: "sozcuk-38616.firebaseapp.com",
@@ -76,10 +76,10 @@
     };
 
     // Firebase başlat
-    const app = firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Sayfa yüklendiğinde kelimeleri göster
+    // Kelimeleri listele
     window.onload = function () {
       const sonucListesi = document.getElementById("sonuclar");
       db.collection("kelimeler").get().then(snapshot => {
@@ -91,13 +91,13 @@
       });
     };
 
-    // Yeni kelime ekleme
+    // Kelime ekle
     function kelimeEkle() {
       const yeniKelime = document.getElementById("yeniKelimeInput").value.toLowerCase().trim();
       if (yeniKelime) {
         db.collection("kelimeler").add({ metin: yeniKelime }).then(() => {
           alert(`"${yeniKelime}" eklendi!`);
-          location.reload(); // listeyi yenile
+          location.reload();
         });
       }
     }
