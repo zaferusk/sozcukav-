@@ -1,4 +1,4 @@
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
@@ -14,8 +14,93 @@ DOCTYPE html>
     }
 
     h1 {
-      color: #b71c1c;
       font-size: 36px;
-      margin-bottom: 10px;
-      font-weight: bold;
+      margin-bottom: 20px;
     }
+
+    input {
+      padding: 10px;
+      width: 200px;
+      margin: 10px;
+      border: 2px solid #b71c1c;
+      border-radius: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #b71c1c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      background: #b71c1c;
+      color: white;
+      margin: 8px auto;
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sözcük Avı</h1>
+
+  <input type="text" id="yeniKelimeInput" placeholder="Yeni kelime yaz">
+  <button onclick="kelimeEkle()">Ekle</button>
+
+  <ul id="sonuclar"></ul>
+
+  <!-- Firebase Kitaplıkları -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
+
+  <script>
+    // Firebase yapılandırman
+    const firebaseConfig = {
+      apiKey: "AIzaSyCz9FOs-rnih7ZLZPva0xpKldmbaKpwrQA",
+      authDomain: "sozcuk-38616.firebaseapp.com",
+      projectId: "sozcuk-38616",
+      storageBucket: "sozcuk-38616.firebasestorage.app",
+      messagingSenderId: "1028469617844",
+      appId: "1:1028469617844:web:c46fd303a8b2ae48be93e1",
+      measurementId: "G-1PZP6QPSFT"
+    };
+
+    // Firebase başlat
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Sayfa yüklendiğinde kelimeleri göster
+    window.onload = function () {
+      const sonucListesi = document.getElementById("sonuclar");
+      db.collection("kelimeler").get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const li = document.createElement("li");
+          li.textContent = doc.data().metin;
+          sonucListesi.appendChild(li);
+        });
+      });
+    };
+
+    // Yeni kelime ekleme
+    function kelimeEkle() {
+      const yeniKelime = document.getElementById("yeniKelimeInput").value.toLowerCase().trim();
+      if (yeniKelime) {
+        db.collection("kelimeler").add({ metin: yeniKelime }).then(() => {
+          alert(`"${yeniKelime}" eklendi!`);
+          location.reload(); // listeyi yenile
+        });
+      }
+    }
+  </script>
+</body>
+</html>
